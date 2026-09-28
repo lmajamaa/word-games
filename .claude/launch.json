@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["--hot", "src/index.ts"],
+      "env": { "BUN_PORT": "5173" },
+      "port": 5173
+    }
+  ]
+}
