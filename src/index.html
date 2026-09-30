@@ -2,7 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <!-- viewport-fit=cover + env(safe-area-inset-*) padding in index.css keeps content clear of the notch -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#121213" />
+    <!-- iOS home-screen web app: draw under a transparent status bar instead of a blurred one -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Word Games" />
     <meta name="description" content="Daily word games: get from today's word to POOP one letter at a time, or guess the five-letter word in six tries." />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Word Games</title>

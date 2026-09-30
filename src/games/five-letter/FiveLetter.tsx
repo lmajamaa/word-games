@@ -73,7 +73,7 @@ export function FiveLetter({ day, preview }: Props) {
           bucket: solved ? String(next.length) : "X",
         }),
       );
-      setTimeout(() => setDialog("stats"), 1500);
+      setTimeout(() => setDialog("stats"), 2200); // after the tile reveal (--reveal-time)
     }
   }, [input, guesses, answer, day, preview, showToast]);
 

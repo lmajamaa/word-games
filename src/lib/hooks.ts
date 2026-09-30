@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { msUntilNextPuzzle } from "./daily";
 
 /** Maps physical key presses to the on-screen keyboard's key names. */
@@ -32,11 +32,12 @@ export function useCountdown(): string {
 
 /** Short-lived message (e.g. "Not in word list") that clears itself. */
 export function useToast(duration = 1200): [string, (msg: string) => void] {
-  const [msg, setMsg] = useState("");
+  const [toast, setToast] = useState({ msg: "" });
   useEffect(() => {
-    if (!msg) return;
-    const id = setTimeout(() => setMsg(""), duration);
+    if (!toast.msg) return;
+    const id = setTimeout(() => setToast({ msg: "" }), duration);
     return () => clearTimeout(id);
-  }, [msg, duration]);
-  return [msg, setMsg];
+  }, [toast, duration]);
+  const show = useCallback((msg: string) => setToast({ msg }), []);
+  return [toast.msg, show];
 }

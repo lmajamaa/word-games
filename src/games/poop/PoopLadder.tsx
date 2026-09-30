@@ -53,8 +53,17 @@ export function PoopLadder({ day, preview }: Props) {
   const submit = useCallback(() => {
     if (input.length < LENGTH) return;
     // The one-letter rule is checked first: it's the rule players break most often.
-    if (!isOneLetterApart(input, last)) return showToast("Not one letter different");
-    if (!isWord(input)) return showToast("Not in word list");
+    const error = !isOneLetterApart(input, last)
+      ? "Not one letter different"
+      : !isWord(input)
+        ? "Not in word list"
+        : null;
+    if (error) {
+      // Rejected guesses are cleared so the player starts over from the last word.
+      showToast(error);
+      setInput("");
+      return;
+    }
 
     const next = [...guesses, input];
     setGuesses(next);

@@ -11,6 +11,11 @@
   --absent: #3a3a3c;
   --accent: #c47f3a;
 
+  /* Five-letter reveal: each tile flips in turn, then the keyboard updates. */
+  --flip-time: 0.5s;
+  --flip-stagger: 0.3s;
+  --reveal-time: calc(4 * var(--flip-stagger) + var(--flip-time));
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color-scheme: dark;
   color: var(--text);
@@ -36,7 +41,9 @@ button {
   max-width: 500px;
   height: 100dvh;
   margin: 0 auto;
-  padding: 0 8px;
+  /* Keep clear of the notch/status bar and home indicator (env() is 0 on other devices). */
+  padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(8px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
 }
@@ -159,6 +166,18 @@ header h1 {
 
 .board.fixed {
   justify-content: center;
+  /* Size the 6-row grid from the space left over, instead of scrolling on short screens. */
+  width: 100%;
+  container-type: size;
+  overflow: hidden;
+}
+
+.board.fixed .tile {
+  /* 6 rows and 5 gaps of 6px must fit the board's height (100cqh). */
+  --size: min(56px, calc((100cqh - 30px) / 6));
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) * 0.55);
 }
 
 .tile-row {
@@ -190,7 +209,63 @@ header h1 {
 .tile.present,
 .tile.absent {
   border-color: transparent;
+}
+
+.tile.match {
   animation: flip 0.35s ease-out;
+}
+
+/*
+ * Wordle-style reveal: tiles flip one after another. Until its turn a tile still looks
+ * like a typed letter (the "backwards" fill shows the 0% keyframe during the delay), and
+ * its colour switches halfway through the flip, while the tile is edge-on.
+ */
+.tile.correct,
+.tile.present,
+.tile.absent {
+  animation: reveal var(--flip-time) ease-in-out backwards;
+}
+.tile.correct {
+  --reveal-color: var(--correct);
+}
+.tile.present {
+  --reveal-color: var(--present);
+}
+.tile.absent {
+  --reveal-color: var(--absent);
+}
+.tile:is(.correct, .present, .absent):nth-child(2) {
+  animation-delay: calc(1 * var(--flip-stagger));
+}
+.tile:is(.correct, .present, .absent):nth-child(3) {
+  animation-delay: calc(2 * var(--flip-stagger));
+}
+.tile:is(.correct, .present, .absent):nth-child(4) {
+  animation-delay: calc(3 * var(--flip-stagger));
+}
+.tile:is(.correct, .present, .absent):nth-child(5) {
+  animation-delay: calc(4 * var(--flip-stagger));
+}
+
+@keyframes reveal {
+  0% {
+    transform: rotateX(0);
+    background: transparent;
+    border-color: #565758;
+  }
+  50% {
+    transform: rotateX(-90deg);
+    background: transparent;
+    border-color: #565758;
+  }
+  50.1% {
+    transform: rotateX(-90deg);
+    background: var(--reveal-color);
+    border-color: transparent;
+  }
+  100% {
+    transform: rotateX(0);
+  }
 }
 
 .tile.match {
@@ -258,38 +333,57 @@ header h1 {
 
 .keyboard {
   width: 100%;
+  max-width: 484px;
   padding: 8px 0;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .keyboard-row {
   display: flex;
-  justify-content: center;
   gap: 6px;
   margin-bottom: 8px;
+  touch-action: manipulation;
 }
 
 .key {
   flex: 1;
-  max-width: 43px;
-  height: 56px;
+  min-width: 0;
+  height: 58px;
   border: 0;
   border-radius: 4px;
   background: var(--key);
+  color: var(--text);
+  font-size: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;
   padding: 0;
+  display: grid;
+  place-items: center;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.1s;
+}
+
+/* Half-key gaps either side of the middle row, as on a real keyboard. */
+.key-spacer {
+  flex: 0.5;
 }
 
 .key.wide {
   flex: 1.5;
-  max-width: 66px;
   font-size: 0.75rem;
 }
 
 .key:active {
-  filter: brightness(1.2);
+  filter: brightness(1.25);
+}
+
+/* Keys change colour only once the row's tiles have finished flipping (see .tile delays). */
+.key.correct,
+.key.present,
+.key.absent {
+  transition-delay: var(--reveal-time);
 }
 
 .key.correct {
@@ -354,7 +448,8 @@ header h1 {
   background: rgb(0 0 0 / 0.6);
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   z-index: 10;
   animation: fade 0.15s;
 }
