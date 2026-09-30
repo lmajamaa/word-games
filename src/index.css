@@ -10,6 +10,7 @@
   --present: #b59f3b;
   --absent: #3a3a3c;
   --accent: #c47f3a;
+  --wrong: #c9453f;
 
   /* Five-letter reveal: each tile flips in turn, then the keyboard updates. */
   --flip-time: 0.5s;
@@ -173,8 +174,15 @@ header h1 {
 }
 
 .board.fixed .tile {
-  /* 6 rows and 5 gaps of 6px must fit the board's height (100cqh). */
-  --size: min(56px, calc((100cqh - 30px) / 6));
+  /*
+   * --rows × --cols tiles (set inline by each game) plus 6px gaps must fit the board's
+   * height (100cqh) and width (100cqw); 10px spare covers the wider gap before score tiles.
+   */
+  --size: min(
+    56px,
+    calc((100cqh - (var(--rows) - 1) * 6px) / var(--rows)),
+    calc((100cqw - (var(--cols) - 1) * 6px - 10px) / var(--cols))
+  );
   width: var(--size);
   height: var(--size);
   font-size: calc(var(--size) * 0.55);
@@ -587,4 +595,99 @@ header h1 {
   .emoji-rain {
     display: none;
   }
+}
+
+/* ---------- 500 game ---------- */
+
+.score-row {
+  display: flex;
+  justify-content: center;
+  /* 6px between the two groups plus the 10px spare in the tile size calculation */
+  gap: 16px;
+}
+
+.counts {
+  display: flex;
+  gap: 6px;
+}
+
+.tile.count {
+  border-color: transparent;
+}
+.tile.count-green {
+  background: var(--correct);
+}
+.tile.count-yellow {
+  background: var(--present);
+}
+.tile.count-red {
+  background: var(--wrong);
+}
+
+/* Score tiles are dimmed until their row is guessed, then flip in one after another. */
+.tile.count:not(.scored) {
+  opacity: 0.35;
+}
+.tile.count.scored {
+  animation: flip 0.35s ease-out backwards;
+}
+.tile.count.scored:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.tile.count.scored:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* The player's own notes on guessed letters (tap to cycle). */
+.tile.clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.tile.note-red,
+.tile.note-yellow,
+.tile.note-green {
+  border-color: transparent;
+}
+.tile.note-red {
+  background: var(--wrong);
+}
+.tile.note-yellow {
+  background: var(--present);
+}
+.tile.note-green {
+  background: var(--correct);
+}
+
+/* In this game "not in the word" is red, when the real colours are revealed at the end. */
+.game-500 .tile.absent {
+  --reveal-color: var(--wrong);
+  background: var(--wrong);
+}
+
+/* Letters already tried (or never in the answer) on the keyboard. */
+.key.used {
+  background: var(--absent);
+}
+
+/* Tab icon: "500" on green, yellow and red tiles. */
+.tab-tiles .wrong {
+  background: var(--wrong);
+}
+.tab-tiles.digits i {
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* The help example has 8 tiles in a row, so it needs smaller tiles than other examples. */
+.example .score-row {
+  gap: 12px;
+}
+.example .score-row .tile {
+  width: 30px;
+  height: 30px;
+  font-size: 1rem;
 }

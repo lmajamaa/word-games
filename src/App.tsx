@@ -1,6 +1,7 @@
 import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { PoopLadder } from "./games/poop/PoopLadder";
 import { FiveLetter } from "./games/five-letter/FiveLetter";
+import { FiveHundred } from "./games/500/FiveHundred";
 import { previewDay, todaysPuzzleNumber } from "./lib/daily";
 import "./index.css";
 
@@ -27,6 +28,18 @@ const GAMES: { route: string; label: string; icon: ReactNode; Component: Compone
       </span>
     ),
     Component: FiveLetter,
+  },
+  {
+    route: "500",
+    label: "Find the word from green, yellow and red counts",
+    icon: (
+      <span className="tab-tiles digits">
+        <i className="correct">5</i>
+        <i className="present">0</i>
+        <i className="wrong">0</i>
+      </span>
+    ),
+    Component: FiveHundred,
   },
 ];
 

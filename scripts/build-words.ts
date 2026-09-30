@@ -19,6 +19,10 @@
  *   - guesses = every 5-letter ENABLE word (− blocklist)
  *   - answers = the most frequent 5-letter non-name words, minus simple plurals / past tenses,
  *     shuffled with a fixed seed.
+ *
+ * 500 game pipeline (same guesses as the five-letter game):
+ *   - answers = the five-letter answers without Q, J, X or Z (the game greys those keys out),
+ *     shuffled with a different seed so the two games don't share a word on the same day.
  */
 import { mkdir, exists } from "node:fs/promises";
 import { join } from "node:path";
@@ -187,9 +191,14 @@ const fiveLetter = {
 };
 await Bun.write(join(OUT, "five-letter.json"), JSON.stringify(fiveLetter));
 
+// ---------- 500 game ----------
+const answers500 = answerPool.filter(w => !/[qjxz]/.test(w));
+await Bun.write(join(OUT, "500.json"), JSON.stringify({ answers: shuffled(answers500, SEED + 500).join(",") }));
+
 const hist: Record<number, number> = {};
 for (const d of dist.values()) hist[d] = (hist[d] ?? 0) + 1;
 console.log(`Poop ladder: ${dict4.size} dictionary words, ${reachable.length} reachable from ${POOP_TARGET}`);
 console.log(`        distance histogram`, hist);
 console.log(`        ${poopStarts.length} start words (${Math.floor(poopStarts.length / 365)}+ years)`);
 console.log(`Five-letter: ${guesses.length} valid guesses, ${answerPool.length} answers`);
+console.log(`500:         ${answers500.length} answers`);

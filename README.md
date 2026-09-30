@@ -4,6 +4,7 @@ Daily word games as a static site (Bun + React). In the UI each game is shown as
 
 - **💩** (`poop`): get from today's start word to **POOP** by changing one letter at a time, in as few steps as possible.
 - **🟩🟨⬛** (`five-letter`): guess the five-letter word in six tries.
+- **500** (`500`): guess the five-letter word in eight tries, but each guess only tells you how many letters are green, yellow and red, not which ones. Tap letters to keep notes.
 
 The IDs in brackets are used everywhere: source folders, routes and saved data (localStorage keys `word-games:<game>:<what>`).
 
@@ -16,7 +17,7 @@ bun run typecheck
 bun test
 ```
 
-Routes are hash based (`#/poop`, `#/five-letter`), so no server rewrites are needed. Add `?day=N` to preview any puzzle; preview mode doesn't save progress or stats.
+Routes are hash based (`#/poop`, `#/five-letter`, `#/500`), so no server rewrites are needed. Add `?day=N` to preview any puzzle; preview mode doesn't save progress or stats.
 
 ## How the word lists are made
 
@@ -35,6 +36,8 @@ Routes are hash based (`#/poop`, `#/five-letter`), so no server rewrites are nee
 
 **Five-letter game**: every 5-letter ENABLE word is a valid guess. Answers are the 2300 most frequent 5-letter words, excluding names and simple plurals and past tenses.
 
+**500 game**: the same valid guesses. Answers are the five-letter answers without Q, J, X or Z, shuffled with a different seed so the two games don't share a word on the same day.
+
 Puzzle *N* uses `list[(N - 1) % length]`. The day rolls over at 08:00 UTC (see `src/lib/daily.ts`).
 
 ## Layout
@@ -46,6 +49,7 @@ src/
   components/          Keyboard, TileRow, Modal, StatsView, GameOver (shared)
   games/poop/          word graph, shortest-path solver, UI
   games/five-letter/   scoring (handles repeated letters), UI
+  games/500/           green/yellow/red counts, letter notes, UI
   data/                generated word lists
 scripts/build-words.ts word-list pipeline
 ```

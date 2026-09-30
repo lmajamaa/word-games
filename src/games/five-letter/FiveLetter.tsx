@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Keyboard } from "../../components/Keyboard";
 import { TileRow } from "../../components/TileRow";
 import { Modal } from "../../components/Modal";
@@ -108,7 +108,7 @@ export function FiveLetter({ day, preview }: Props) {
         {preview && <span className="badge">preview</span>}
       </div>
 
-      <div className="board fixed">
+      <div className="board fixed" style={{ "--rows": MAX_GUESSES, "--cols": LENGTH } as CSSProperties}>
         {rows.map((r, i) => (
           <TileRow
             key={i}
