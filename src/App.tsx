@@ -65,8 +65,7 @@ export function App() {
   return (
     <div className="app">
       <header>
-        <h1>Word Games</h1>
-        <nav className="tabs">
+        <nav className="tabs" aria-label="Games">
           {GAMES.map(g => (
             <a
               key={g.route}
