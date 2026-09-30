@@ -1,11 +1,11 @@
 {
   "name": "word-games",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "bun --hot src/index.ts",
-    "build": "rm -rf dist && bun build ./src/index.html --outdir=dist ---minify --production",
+    "build": "rm -rf dist && bun build ./src/index.html --outdir=dist --production",
     "preview": "bunx serve dist",
     "words": "bun scripts/build-words.ts",
     "typecheck": "tsc --noEmit"

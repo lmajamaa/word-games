@@ -27,6 +27,17 @@
   box-sizing: border-box;
 }
 
+/*
+ * The app fits the screen and scrolls inside the board and dialogs only. Locking the page
+ * stops iOS rubber-banding from dragging the header up under the status bar.
+ */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -42,9 +53,13 @@ button {
   max-width: 500px;
   height: 100dvh;
   margin: 0 auto;
-  /* Keep clear of the notch/status bar and home indicator (env() is 0 on other devices). */
-  padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
-    max(8px, env(safe-area-inset-left));
+  /*
+   * Keep clear of the notch/status bar and home indicator (env() is 0 on other devices).
+   * Where there is a top inset, add up to 12px more: iOS's blur under the status bar reaches
+   * a little past the safe area.
+   */
+  padding: calc(env(safe-area-inset-top) + min(env(safe-area-inset-top), 12px))
+    max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
 }
