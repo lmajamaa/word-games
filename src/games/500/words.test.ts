@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ANSWERS, isWord, RARE_LETTERS, score } from "./words";
+import { ANSWERS, isWord, RARE_LETTERS, ruledOutLetters, score } from "./words";
 
 describe("score", () => {
   test("counts green, yellow and red letters", () => {
@@ -17,6 +17,30 @@ describe("score", () => {
       const s = score(g, a);
       expect(s.green + s.yellow + s.red).toBe(5);
     }
+  });
+});
+
+describe("ruledOutLetters", () => {
+  test("letters marked red are ruled out", () => {
+    expect(ruledOutLetters(["crane"], [["red", "", "", "red", ""]])).toEqual(new Set(["c", "n"]));
+  });
+
+  test("no notes rule nothing out", () => {
+    expect(ruledOutLetters(["crane", "slate"], [])).toEqual(new Set());
+  });
+
+  test("a yellow or green note for the same letter elsewhere keeps it available", () => {
+    // the second L is an extra copy (red), but the first is in the word (green)
+    expect(ruledOutLetters(["llama"], [["green", "red", "", "", ""]])).toEqual(new Set());
+    expect(ruledOutLetters(["crane", "scare"], [["red", "", "", "", ""], ["", "yellow", "", "", ""]])).toEqual(
+      new Set(),
+    );
+  });
+
+  test("a red note in any guess counts", () => {
+    expect(ruledOutLetters(["crane", "slate"], [["", "", "", "", ""], ["", "", "", "red", ""]])).toEqual(
+      new Set(["t"]),
+    );
   });
 });
 
