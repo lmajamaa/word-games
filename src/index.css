@@ -688,8 +688,8 @@ header {
   background: var(--wrong);
 }
 
-/* Letters already tried (or never in the answer) on the keyboard. */
-.key.used {
+/* Letters ruled out on the 500 game's keyboard. */
+.key.excluded {
   background: var(--absent);
 }
 

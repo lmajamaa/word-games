@@ -93,8 +93,9 @@ export function FiveHundred({ day, preview }: Props) {
   );
   usePhysicalKeyboard(onKey, dialog === null);
 
-  // Keys only show which letters you've tried (and the ones that are never used), not results.
-  const usedLetters = useMemo(() => new Set([...RARE_LETTERS, ...guesses.join("")]), [guesses]);
+  // The keyboard never reflects guesses: darkening tried letters read as "not in the word".
+  // Only Q, J, X and Z start greyed out, since they're never in an answer.
+  const excludedLetters = new Set(RARE_LETTERS);
 
   const shareText = [
     `500 #${day} ${won ? guesses.length : "X"}/${MAX_GUESSES}`,
@@ -146,7 +147,7 @@ export function FiveHundred({ day, preview }: Props) {
           )}
         </GameOver>
       ) : (
-        <Keyboard onKey={onKey} letterClass={l => (usedLetters.has(l) ? "used" : undefined)} />
+        <Keyboard onKey={onKey} letterClass={l => (excludedLetters.has(l) ? "excluded" : undefined)} />
       )}
 
       <nav className="footer">
