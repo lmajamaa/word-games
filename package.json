@@ -2,6 +2,7 @@
   "name": "word-games",
   "version": "0.2.2",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "bun --hot src/index.ts",

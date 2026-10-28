@@ -53,3 +53,7 @@ src/
   data/                generated word lists
 scripts/build-words.ts word-list pipeline
 ```
+
+## License
+
+[MIT](LICENSE). The generated word lists in `src/data/` are built from the third-party sources listed under [How the word lists are made](#how-the-word-lists-are-made), which keep their own terms.
