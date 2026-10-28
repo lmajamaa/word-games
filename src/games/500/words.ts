@@ -27,3 +27,24 @@ export function score(guess: string, answer: string): Score {
   const count = (m: string) => marks.filter(x => x === m).length;
   return { green: count("correct"), yellow: count("present"), red: count("absent") };
 }
+
+/** The player's own note on a guessed letter, cycled by tapping it. */
+export type Note = "" | "red" | "yellow" | "green";
+
+/**
+ * Letters the player has ruled out with their notes: marked red somewhere and never yellow
+ * or green. A repeated letter can be red in one spot (an extra copy) and still be in the word,
+ * so any yellow or green note for it keeps the key available.
+ */
+export function ruledOutLetters(guesses: string[], notes: Note[][]): Set<string> {
+  const red = new Set<string>();
+  const kept = new Set<string>();
+  guesses.forEach((guess, row) =>
+    [...guess].forEach((letter, col) => {
+      const note = notes[row]?.[col];
+      if (note === "red") red.add(letter);
+      else if (note === "yellow" || note === "green") kept.add(letter);
+    }),
+  );
+  return new Set([...red].filter(l => !kept.has(l)));
+}

@@ -8,7 +8,7 @@ import { pickForDay, puzzleDate } from "../../lib/daily";
 import { usePhysicalKeyboard, useToast } from "../../lib/hooks";
 import { currentStreak, hasSeenHelp, loadProgress, loadStats, markHelpSeen, recordResult, saveProgress } from "../../lib/storage";
 import { evaluate } from "../five-letter/words";
-import { ANSWERS, isWord, RARE_LETTERS, score, type Score } from "./words";
+import { ANSWERS, isWord, RARE_LETTERS, ruledOutLetters, score, type Note, type Score } from "./words";
 
 const GAME_ID = "500";
 const LENGTH = 5;
@@ -16,8 +16,7 @@ const MAX_GUESSES = 8;
 // Losses only count towards Played and Win %, like the five-letter game.
 const BUCKETS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
-/** The player's own notes on a letter, cycled by tapping it: none → red → yellow → green. */
-type Note = "" | "red" | "yellow" | "green";
+/** Tapping a guessed letter cycles its note: none → red → yellow → green. */
 const NEXT_NOTE: Record<Note, Note> = { "": "red", red: "yellow", yellow: "green", green: "" };
 
 interface Progress {
@@ -94,8 +93,12 @@ export function FiveHundred({ day, preview }: Props) {
   usePhysicalKeyboard(onKey, dialog === null);
 
   // The keyboard never reflects guesses: darkening tried letters read as "not in the word".
-  // Only Q, J, X and Z start greyed out, since they're never in an answer.
-  const excludedLetters = new Set(RARE_LETTERS);
+  // Only Q, J, X and Z start greyed out, since they're never in an answer, plus whatever the
+  // player has ruled out by marking it red.
+  const excludedLetters = useMemo(
+    () => new Set([...RARE_LETTERS, ...ruledOutLetters(guesses, notes)]),
+    [guesses, notes],
+  );
 
   const shareText = [
     `500 #${day} ${won ? guesses.length : "X"}/${MAX_GUESSES}`,
@@ -171,7 +174,10 @@ export function FiveHundred({ day, preview }: Props) {
               <Counts score={score("crane", "caret")} />
             </div>
           </div>
-          <p>…but not which letters! Tap letters in your guesses to note what you've worked out (red → yellow → green).</p>
+          <p>
+            …but not which letters! Tap letters in your guesses to note what you've worked out (red → yellow →
+            green). Letters you mark red are greyed out on the keyboard.
+          </p>
           <p>Q, J, X and Z are never in the answer. A perfect guess scores 500.</p>
           <button className="primary" onClick={() => setDialog(null)}>
             Play!
