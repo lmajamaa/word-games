@@ -1,2 +1,5 @@
 [serve.static]
 env = "BUN_PUBLIC_*"
+
+[install]
+minimumReleaseAge = "7d"
