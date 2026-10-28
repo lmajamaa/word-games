@@ -17,6 +17,10 @@
   --flip-stagger: 0.3s;
   --reveal-time: calc(4 * var(--flip-stagger) + var(--flip-time));
 
+  /* Fixed header: the status bar area, 8px padding, the game buttons, 8px padding, 1px border. */
+  --tab-height: 60px;
+  --header-height: calc(env(safe-area-inset-top) + var(--tab-height) + 17px);
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color-scheme: dark;
   color: var(--text);
@@ -29,7 +33,7 @@
 
 /*
  * The app fits the screen and scrolls inside the board and dialogs only. Locking the page
- * stops iOS rubber-banding from dragging the header up under the status bar.
+ * stops iOS rubber-banding from pulling content around under the fixed header.
  */
 html,
 body {
@@ -53,33 +57,45 @@ button {
   max-width: 500px;
   height: 100dvh;
   margin: 0 auto;
-  /*
-   * Keep clear of the notch/status bar and home indicator (env() is 0 on other devices).
-   * Where there is a top inset, add up to 12px more: iOS's blur under the status bar reaches
-   * a little past the safe area.
-   */
-  padding: calc(env(safe-area-inset-top) + min(env(safe-area-inset-top), 12px))
-    max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px, env(safe-area-inset-left));
+  /* Room for the fixed header on top; clear of the home indicator and curved edges elsewhere. */
+  padding: var(--header-height) max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(8px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
 }
 
-/* The game selector is the whole header. */
+/*
+ * The game selector is the whole header. It's fixed to the top, full width, with an opaque
+ * background that extends up behind the status bar: iOS home-screen apps then paint the
+ * status bar in the header's colour. Without such an element iOS draws a blur/shadow over
+ * whatever is at the top of the page (theme-color doesn't change that), which blurred the
+ * game buttons. See https://bugs.webkit.org/show_bug.cgi?id=305546 for the behaviour.
+ */
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 8px 0;
+  padding: calc(env(safe-area-inset-top) + 8px) max(8px, env(safe-area-inset-right)) 8px
+    max(8px, env(safe-area-inset-left));
 }
 
 .tabs {
   display: flex;
   justify-content: center;
   gap: 12px;
+  /* line up with the 500px-wide game column below */
+  max-width: 484px;
+  margin: 0 auto;
 }
 
 .tabs a {
   flex: 1;
   max-width: 200px;
-  height: 60px;
+  height: var(--tab-height);
   display: grid;
   place-items: center;
   text-decoration: none;
