@@ -92,6 +92,30 @@ header {
   margin: 0 auto;
 }
 
+/* GitHub link in the top-right corner, level with the game buttons. */
+.github-link {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: max(16px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: var(--tab-height);
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.github-link:hover {
+  color: var(--text);
+}
+
+/* Only where it stands clear of the game buttons, not on phones. */
+@media (max-width: 767px) {
+  .github-link {
+    display: none;
+  }
+}
+
 .tabs a {
   flex: 1;
   max-width: 200px;
