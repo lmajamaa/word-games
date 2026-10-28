@@ -77,7 +77,8 @@ header {
   left: 0;
   right: 0;
   z-index: 5;
-  background: var(--surface);
+  /* same colour as the page; it still needs to be opaque for iOS */
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   padding: calc(env(safe-area-inset-top) + 8px) max(8px, env(safe-area-inset-right)) 8px
     max(8px, env(safe-area-inset-left));
@@ -90,6 +91,30 @@ header {
   /* line up with the 500px-wide game column below */
   max-width: 484px;
   margin: 0 auto;
+}
+
+/* GitHub link in the top-right corner, level with the game buttons. */
+.github-link {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: max(16px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: var(--tab-height);
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.github-link:hover {
+  color: var(--text);
+}
+
+/* Only where it stands clear of the game buttons, not on phones. */
+@media (max-width: 767px) {
+  .github-link {
+    display: none;
+  }
 }
 
 .tabs a {
